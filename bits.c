@@ -19,7 +19,7 @@
  * Difficulty: 1
  */
 int bitAnd(int x, int y) {
-    return 2;
+    return ~(~x | ~y);
 }
 
 /*
@@ -30,7 +30,9 @@ int bitAnd(int x, int y) {
  *   Difficulty: 1
  */
 int bitXor(int x, int y) {
-    return 2;
+    // xor = or - and = or & ~and
+    // x | y = ~(~x & ~y)
+    return ~(~x & ~y) & ~(x & y);
 }
 
 /*
@@ -50,7 +52,11 @@ int bitXor(int x, int y) {
  *   1 if x and y have the same sign , 0 otherwise.
  */
 int samesign(int x, int y) {
-    return 2;
+    if(x && y) {
+        return !(((x >> 31) ^ (y >> 31)) & 1);
+    } else {
+        return !(x ^ y);
+    }
 }
 
 /*
@@ -63,7 +69,27 @@ int samesign(int x, int y) {
  *   Difficulty: 4
  */
 int logtwo(int v) {
-    return 2;
+    int ans = 0, mask;
+
+    mask = (v > 0xffff) << 4;
+    ans |= mask;
+    v >>= mask;
+
+    mask = (v > 0xff) << 3;
+    ans |= mask;
+    v >>= mask;
+
+    mask = (v > 0xf) << 2;
+    ans |= mask;
+    v >>= mask;
+
+    mask = (v > 3) << 1;
+    ans |= mask;
+    v >>= mask;
+    
+    ans |= (v > 1);
+
+    return ans;
 }
 
 /*
@@ -76,7 +102,11 @@ int logtwo(int v) {
  *    Difficulty: 2
  */
 int byteSwap(int x, int n, int m) {
-    return 2;
+    n <<= 3, m <<= 3;
+    int a = (x >> n & 0xff) ^ (x >> m & 0xff);
+
+    x ^= (a << n) ^ (a << m);
+    return x;
 }
 
 /*
@@ -88,7 +118,12 @@ int byteSwap(int x, int n, int m) {
  *   Difficulty: 3
  */
 unsigned reverse(unsigned v) {
-    return 2;
+    for(int i = 15; ~i; i --) {
+        int j = 31 - i;
+        unsigned x = (v >> i & 1), y = (v >> j & 1);
+        v += (x << j) + (y << i) - (x << i) - (y << j);
+    }
+    return v;
 }
 
 /*
@@ -100,7 +135,8 @@ unsigned reverse(unsigned v) {
  *   Difficulty: 3
  */
 int logicalShift(int x, int n) {
-    return 2;
+    int y = (x >> 31 & 1);
+    return (x & 0x7fffffff) >> n | (y << (31 ^ n));
 }
 
 /*
@@ -112,7 +148,25 @@ int logicalShift(int x, int n) {
  *   Difficulty: 4
  */
 int leftBitCount(int x) {
-    return 2;
+    int ans = 0, mask;
+    
+    mask = !((x >> 16) ^ 0xffffffff) << 4;
+    ans += mask, x <<= mask;
+
+    mask = !((x >> 24) ^ 0xffffffff) << 3;
+    ans += mask, x <<= mask;
+
+    mask = !((x >> 28) ^ 0xffffffff) << 2;
+    ans += mask, x <<= mask;
+
+    mask = !((x >> 30) ^ 0xffffffff) << 1;
+    ans += mask, x <<= mask;
+
+    mask = !((x >> 31) ^ 0xffffffff);
+    ans += mask, x <<= mask;
+
+    ans += !!(x & 0x80000000);
+    return ans;
 }
 
 /*
