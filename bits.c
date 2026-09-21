@@ -211,7 +211,11 @@ unsigned float_i2f(int x) {
  *   Difficulty: 4
  */
 unsigned floatScale2(unsigned uf) {
-    return 2;
+    int exp = (uf >> 23 & 0xff);
+    if((exp == 0xff) | !(uf & 0x7fffffff)) return uf;
+    if(exp) return uf + (1 << 23);
+
+    return (uf & 0xff800000) + ((uf & 0x007fffff) << 1);
 }
 
 /*
