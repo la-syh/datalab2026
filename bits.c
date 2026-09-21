@@ -103,7 +103,7 @@ int logtwo(int v) {
  */
 int byteSwap(int x, int n, int m) {
     n <<= 3, m <<= 3;
-    int a = (x >> n & 0xff) ^ (x >> m & 0xff);
+    int a = ((x >> n ^ x >> m) & 0xff);
 
     x ^= (a << n) ^ (a << m);
     return x;
@@ -178,7 +178,25 @@ int leftBitCount(int x) {
  *   Difficulty: 4
  */
 unsigned float_i2f(int x) {
-    return 2;
+    if(x == 0) return 0;
+    if(x == 0x80000000) return 0xcf000000u; // 1 10011110 00000000000000000000000
+    int bias = 127, y, z, s, M = 0;
+    if(x < 0) y = z = -x, s = 1;
+    else y = z = x, s = 0;
+
+    int E = -1;
+    while(z) z >>= 1, E += 1;
+
+    y -= (1 << E);
+
+    if(E > 23) {
+        M = (y >> (E - 23));
+        if((y - (M << (E - 23))) + (M & 1) > (1 << (E - 24))) {
+            M += 1;
+            if(M >> 23) M = 0, E += 1;
+        }
+    } else M = (y << (23 - E));
+    return (s << 31) | ((E + bias) << 23) | M;
 }
 
 /*
