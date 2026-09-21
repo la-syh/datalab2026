@@ -232,7 +232,12 @@ unsigned floatScale2(unsigned uf) {
  *   Difficulty: 3
  */
 int float64_f2i(unsigned uf1, unsigned uf2) {
-    return 2;
+    int exp = ((uf2 & 0x7ff00000) >> 20) - 1023;
+    if(exp < 0) return 0;
+    if(exp > 30) return 0x80000000;
+    int value = (0x40000000 | ((uf2 & 0x000fffff) << 10) | ((uf1 & 0xffc00000) >> 22) ) >> (30 - exp);
+    if(uf2 & 0x80000000) value = -value;
+    return value;
 }
 
 /*
