@@ -254,5 +254,10 @@ int float64_f2i(unsigned uf1, unsigned uf2) {
  *   Difficulty: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+    if(x > 127) return 0x7f800000; // +inf
+    if(x < -149) return 0;
+    int exp = x + 127;
+    if(exp < 0) return (1u << (22 + exp));
+    if(exp) return exp << 23;
+    return 0x400000;    // 2 ** -127
 }
