@@ -184,7 +184,7 @@ unsigned float_i2f(int x) {
     if(x < 0) y = z = -x, s = 1;
     else y = z = x, s = 0;
 
-    int E = -1;
+    int E = 0xffffffff;
     while(z) z >>= 1, E += 1;
 
     y -= (1 << E);
